@@ -2,7 +2,7 @@
 
 - **assets/banner.webp** — Soham Shinde's original portfolio artwork, kept unchanged as the source.
 - **assets/banner-hero.png** — the top title strip of that artwork (rows 0–295), cropped without any other change.
-- **Technology logos** in `assets/badges/` and `assets/contact/` are drawn from
+- **Technology logos** in `assets/projects/`, `assets/profile/` and `assets/contact/` are drawn from
   [Simple Icons](https://simpleicons.org) (CC0 1.0). The source glyphs are kept in `tools/icons/`.
   All trademarks belong to their respective owners.
 - **Concept glyphs** (Excel, SQL, Financial Modeling, Monte Carlo, OR-Tools, Forecasting, LLM Integration,
