@@ -626,16 +626,190 @@ def footer() -> None:
     write("sections/divider.svg", svg(w, h, "".join(body), "", decorative=True))
 
 
+# ------------------------------------------------------------------ section headers
+def section_header(slug: str, title: str, subtitle: str, seed: int) -> None:
+    w, h = 800, 112
+    uid = slug
+    body = [plaque_defs(uid, w, h), frame(uid, w, h, 16), stars(seed, w, h, 60,
+            avoid=lambda x, y: 180 < x < 620 and 20 < y < 95)]
+    tw = F["label"].width(title, 32, 7)
+    body.append(text("label", title, 32, w / 2, 56, GOLD_LIGHT, "middle", 7))
+    gap = tw / 2 + 26
+    for side in (-1, 1):
+        x0 = w / 2 + side * gap
+        x1 = w / 2 + side * (gap + 120)
+        body.append(f'<line x1="{x0:g}" y1="45" x2="{x1:g}" y2="45" stroke="{GOLD}" stroke-opacity="0.75" stroke-width="1.4"/>')
+        body.append(sparkle(x0 + side * 4, 45, 5))
+        body.append(f'<circle cx="{x1 + side * 6:g}" cy="45" r="2.2" fill="{GOLD}"/>')
+    body.append(text("italic", subtitle, 25, w / 2, 89, CREAM, "middle", 0.4, opacity=0.9))
+    write(f"sections/{slug}.svg", svg(w, h, "".join(body), f"{title.title()} — {subtitle}"))
+
+
+
+# ------------------------------------------------------------------ project cards (panel style)
+CARD_ICONS = {
+    "bars": '<path d="M5 20v-5M10 20v-9M15 20v-12M20 20V5"/><path d="M3 21h19"/>',
+    "layers": '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/>',
+    "flow": '<rect x="9" y="2.5" width="6" height="5" rx="1"/><rect x="2.5" y="16.5" width="6" height="5" rx="1"/>'
+            '<rect x="15.5" y="16.5" width="6" height="5" rx="1"/><path d="M12 7.5v4.5M5.5 16.5V12h13v4.5"/>',
+    "shield": '<path d="M12 2.5l8 3v6.2c0 5-3.4 8.4-8 9.8-4.6-1.4-8-4.8-8-9.8V5.5z"/>',
+}
+
+CARDS = [
+    dict(num="01", title="Technology & AI Investment Strategy", icon="bars", motif=motif_investment, seed=11,
+         desc="Prioritizes technology initiatives under budget and resource constraints, plans quarterly "
+              "delivery and tracks realized benefits against targets.",
+         pills=[("Python", "python", "brand"), ("OR-Tools", "optimize", "concept"), ("SQL", "database", "concept"),
+                ("Streamlit", "streamlit", "brand"), ("Monte Carlo", "montecarlo", "concept")]),
+    dict(num="02", title="Commercial Analytics & Pricing Strategy", icon="layers", motif=motif_pricing, seed=22,
+         desc="Explains revenue changes across 1M+ retail transactions, evaluates customer value and "
+              "identifies data-supported pricing opportunities.",
+         pills=[("Python", "python", "brand"), ("DuckDB", "duckdb", "brand"), ("FastAPI", "fastapi", "brand"),
+                ("React", "react", "brand"), ("TypeScript", "typescript", "brand")]),
+    dict(num="03", title="Process-to-Value", icon="flow", motif=motif_process, seed=33,
+         desc="In development: analyzing procurement event logs to show where workflows stall, loop back "
+              "into rework and need improvement first.",
+         pills=[], status="IN DEVELOPMENT", planned="Planned · Python · SQL · PM4Py · BPMN"),
+    dict(num="04", title="DoxShield", icon="shield", motif=motif_dome, seed=44,
+         desc="Investigates data-sovereignty risks by scanning apps, network connections, cookies and "
+              "permissions, keeping the evidence behind every finding.",
+         pills=[("Python", "python", "brand"), ("FastAPI", "fastapi", "brand"), ("React", "react", "brand"),
+                ("TypeScript", "typescript", "brand"), ("Electron", "electron", "brand")]),
+]
+
+
+def pill(x: float, y: float, label: str, icon: str, kind: str, size: float = 13.5, h: float = 32):
+    pad, isz, gap = 11, 16, 7
+    tw = F["sans"].width(label, size)
+    w = pad + isz + gap + tw + pad
+    o = [f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h}" rx="{h / 2}" fill="{NAVY}" fill-opacity="0.85" '
+         f'stroke="{GOLD}" stroke-opacity="0.8" stroke-width="1.2"/>']
+    ix, iy, sc = x + pad, y + (h - isz) / 2, isz / 24
+    if kind == "brand":
+        o.append(f'<path transform="translate({ix:.1f} {iy:.1f}) scale({sc:.4f})" fill="{legible(BRAND[icon])}" d="{simple_icon(icon)}"/>')
+    else:
+        o.append(f'<g transform="translate({ix:.1f} {iy:.1f}) scale({sc:.4f})" fill="none" stroke="{GOLD_LIGHT}" '
+                 f'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">{CONCEPTS[icon]}</g>')
+    o.append(text("sans", label, size, x + pad + isz + gap, y + h / 2 + size * 0.36, CREAM))
+    return "".join(o), w
+
+
+def leaves(x: float, y: float, s: float, seed: int, flip: bool = False) -> str:
+    rnd = random.Random(seed)
+    o = []
+    for _ in range(9):
+        a = rnd.uniform(-70, 70) + (180 if flip else 0)
+        dx, dy = rnd.uniform(-26, 26) * s, rnd.uniform(-18, 10) * s
+        col = rnd.choice(["#6d4bb0", "#7f5bc4", "#5a3c94", GOLD_DEEP, "#b8873a"])
+        o.append(f'<ellipse cx="0" cy="-{9 * s:.1f}" rx="{4.2 * s:.1f}" ry="{9.5 * s:.1f}" fill="{col}" fill-opacity="0.9" '
+                 f'transform="translate({x + dx:.1f} {y + dy:.1f}) rotate({a:.0f})"/>')
+    return "".join(o)
+
+
+def card(c: dict, ox: float, oy: float, w: float, mobile: bool, min_h: float = 0) -> tuple[str, float]:
+    """One panel in the style of the banner's project panels; returns (svg, height)."""
+    uid = f"k{c['num']}{'m' if mobile else 'd'}"
+    title_size, desc_size = (38, 25) if mobile else (33, 21.5)
+    lx = 112
+    motif_w = 178 if mobile else 250
+    title_lines = wrap("title", c["title"], title_size, w - lx - (motif_w if mobile else 270))
+    title_y = 100
+    title_end = title_y + (len(title_lines) - 1) * (title_size + 3)
+    desc_w = (w - 64) if mobile else (w - 330)
+    desc_top = max(title_end + 46, 190) if mobile else title_end + 44
+    desc_lines = wrap("italic", c["desc"], desc_size, desc_w)
+    desc_end = desc_top + (len(desc_lines) - 1) * (desc_size + 6)
+    pill_rows, row, cur = [], [], 0
+    for p in c["pills"]:
+        pw = pill(0, 0, *p, size=15 if mobile else 13.5)[1]
+        if row and cur + pw > w - 64:
+            pill_rows.append(row)
+            row, cur = [], 0
+        row.append(p)
+        cur += pw + 8
+    if row:
+        pill_rows.append(row)
+    rows = max(len(pill_rows), 1)
+    pill_h = 34 if mobile else 32
+    h = desc_end + 34 + rows * (pill_h + 10) + 26
+    if not mobile:
+        h = max(h, 340, min_h)
+    o = [plaque_defs(uid, w, h)]
+    inner = [frame(uid, w, h, 22),
+             stars(c["seed"], w, h, 55, avoid=lambda x, y: x < w * 0.62 and 40 < y < h - 70),
+             f'<path d="M10 {h - 10}L10 {h - 52}Q{w * 0.2:.0f} {h - 78} {w * 0.42:.0f} {h - 56}T{w - 10} {h - 64}L{w - 10} {h - 10}Z" '
+             f'fill="#1c1540" fill-opacity="0.8"/>',
+             leaves(28, h - 26, 1.0, c["seed"])]
+    if not mobile:
+        inner.append(leaves(w - 34, h - 30, 0.9, c["seed"] + 1))
+    # header
+    inner.append(text("label", f"PROJECT {c['num']}", 15, lx, 50, GOLD, tracking=4.2))
+    lw = F["label"].width(f"PROJECT {c['num']}", 15, 4.2)
+    inner.append(f'<rect x="{lx + lw + 14:.1f}" y="44.5" width="170" height="1.5" fill="url(#fade{uid})"/>')
+    inner.append(f'<rect x="32" y="66" width="58" height="58" rx="11" fill="{NAVY}" fill-opacity="0.7" stroke="url(#gold{uid})" stroke-width="1.8"/>')
+    inner.append(f'<g transform="translate(46 80) scale(1.25)" fill="none" stroke="{GOLD_LIGHT}" stroke-width="1.9" '
+                 f'stroke-linecap="round" stroke-linejoin="round">{CARD_ICONS[c["icon"]]}</g>')
+    for i, ln in enumerate(title_lines):
+        inner.append(text("title", ln, title_size, lx, title_y + i * (title_size + 3), CREAM))
+    for i, ln in enumerate(desc_lines):
+        inner.append(text("italic", ln, desc_size, 36, desc_top + i * (desc_size + 6), CREAM, opacity=0.92))
+    # motif
+    if mobile:
+        inner.append(f'<g transform="translate({w - 162} 44) scale(0.6)">{c["motif"](0, 0)}</g>')
+    else:
+        inner.append(f'<g transform="translate({w - 268} 52) scale(0.98)">{c["motif"](0, 0)}</g>')
+    py = desc_end + 30
+    if c.get("status"):
+        sw = F["sans_bold"].width(c["status"], 12.5, 2) + 28
+        inner.append(f'<rect x="32" y="{py}" width="{sw:.1f}" height="{pill_h}" rx="{pill_h / 2}" fill="{GOLD}" fill-opacity="0.14" '
+                     f'stroke="{GOLD}" stroke-width="1.2"/>')
+        inner.append(text("sans_bold", c["status"], 12.5, 46, py + pill_h / 2 + 4.5, GOLD_LIGHT, tracking=2))
+        inner.append(text("sans", c["planned"], 14 if mobile else 13, 32 + sw + 14, py + pill_h / 2 + 4.8, LAVENDER))
+    for r, prow in enumerate(pill_rows):
+        x = 32
+        for p in prow:
+            s, pw = pill(x, py + r * (pill_h + 10), *p, size=15 if mobile else 13.5, h=pill_h)
+            inner.append(s)
+            x += pw + 8
+    o.append(f'<g transform="translate({ox} {oy})">{"".join(inner)}</g>')
+    return "".join(o), h
+
+
+def project_cards() -> None:
+    alt = "Featured projects — " + " | ".join(
+        f"Project {c['num']}: {c['title']}. {c['desc']}"
+        + (f" Tech: {', '.join(p[0] for p in c['pills'])}." if c["pills"] else f" Status: in development. {c['planned']}.")
+        for c in CARDS)
+    # desktop: 2 x 2 grid
+    cw, gap = 760, 28
+    parts, heights = [], []
+    for c in CARDS:
+        heights.append(card(c, 0, 0, cw, False)[1])
+    rh = [max(heights[0], heights[1]), max(heights[2], heights[3])]
+    for i, c in enumerate(CARDS):
+        col, row = i % 2, i // 2
+        y = 0 if row == 0 else rh[0] + gap
+        s, _ = card(c, col * (cw + gap), y, cw, False, rh[row])
+        parts.append(s)
+    W, H = 2 * cw + gap, rh[0] + gap + rh[1]
+    write("projects/cards.svg", svg(W, H, "".join(parts), alt))
+    # mobile: one column
+    mw, parts, y = 600, [], 0
+    for c in CARDS:
+        s, h = card(c, 0, y, mw, True)
+        parts.append(s)
+        y += h + 24
+    write("projects/cards-mobile.svg", svg(mw, y - 24, "".join(parts), alt))
+
+
 def main() -> None:
     F.update(load_faces())
     for slug, title in (("about", "ABOUT ME"), ("stack", "TECH STACK"),
-                        ("projects", "FEATURED PROJECTS"), ("connect", "LET\u2019S CONNECT")):
+                        ("projects", "FEATURED PROJECTS")):
         heading(slug, title)
+    section_header("connect", "LET\u2019S CONNECT", "Open to conversations about strategy, analytics and applied AI", 4)
     stack_board()
-    for p in PROJECTS:
-        project_plaque(*p)
-    for b in BADGES:
-        badge(*b)
+    project_cards()
     for k in ABOUT_ICONS:
         about_icon(k)
     contact_button("github", "GITHUB", "sohamshindework", "github", "brand")
