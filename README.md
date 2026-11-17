@@ -5,82 +5,36 @@
 <br>
 
 <p align="center">
-  <img src="assets/sections/about.svg" width="100%" alt="About me">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/heading-about.svg"><img src="assets/profile/light/heading-about.svg" height="52" alt="About me"></picture>
 </p>
 
-I'm pursuing an M.Sc. in Management and Engineering at RWTH Aachen University, after more than two years as a software engineer on enterprise teams. The work I enjoy most sits where a technical answer has to hold up as a business answer: which initiative deserves the budget, what is really moving revenue, where a process loses time, and which privacy risk needs a closer look. I build working systems for those questions, so decisions rest on evidence that people can inspect.
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/about-study.svg"><img src="assets/profile/light/about-study.svg" width="20" alt=""></picture>&nbsp; I'm pursuing an <b>M.Sc. in Management and Engineering (MME-TIME) at RWTH Aachen University</b>, building on a B.Tech in Information Technology.</p>
 
-<table>
-  <tr>
-    <td width="56" align="center"><img src="assets/icons/study.svg" width="40" alt=""></td>
-    <td><b>Studying</b><br>M.Sc. Management and Engineering (MME-TIME), RWTH Aachen University<br><sub>B.Tech Information Technology, Savitribai Phule Pune University</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="assets/icons/experience.svg" width="40" alt=""></td>
-    <td><b>Experience</b><br>AI Software Engineer at Softcane Solutions · Associate Software Engineer at HHAeXchange<br><sub>Enterprise AI features, backend services, technical requirements, LLM evaluation and production performance</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="assets/icons/build.svg" width="40" alt=""></td>
-    <td><b>Building</b><br>Investment decision platforms, commercial analytics, process analysis and privacy tools</td>
-  </tr>
-  <tr>
-    <td align="center"><img src="assets/icons/direction.svg" width="40" alt=""></td>
-    <td><b>Heading toward</b><br>Technology strategy, digital transformation, business analytics, innovation and applied AI</td>
-  </tr>
-</table>
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/about-experience.svg"><img src="assets/profile/light/about-experience.svg" width="20" alt=""></picture>&nbsp; I bring <b>2+ years of enterprise software engineering</b> from Softcane Solutions and HHAeXchange: enterprise AI features, backend services, technical requirements, LLM evaluation and production performance.</p>
+
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/about-build.svg"><img src="assets/profile/light/about-build.svg" width="20" alt=""></picture>&nbsp; I build <b>tools that connect technical analysis with business decisions</b>, from technology investment prioritization and commercial analytics to process analysis and privacy investigation.</p>
+
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/about-direction.svg"><img src="assets/profile/light/about-direction.svg" width="20" alt=""></picture>&nbsp; <b>Looking to contribute in technology strategy, digital transformation, business analytics and applied AI.</b></p>
 
 <br>
 
 <p align="center">
-  <img src="assets/sections/stack.svg" width="100%" alt="Tech stack">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/heading-stack.svg"><img src="assets/profile/light/heading-stack.svg" height="52" alt="Tech stack"></picture>
 </p>
 
-**Business Analytics & Strategy**
-
-<p>
-  <img src="assets/badges/excel.svg" alt="Excel">
-  <img src="assets/badges/sql.svg" alt="SQL">
-  <img src="assets/badges/financial-modeling.svg" alt="Financial Modeling">
-  <img src="assets/badges/monte-carlo.svg" alt="Monte Carlo simulation">
-  <img src="assets/badges/or-tools.svg" alt="OR-Tools optimization">
-  <img src="assets/badges/forecasting.svg" alt="Forecasting">
-</p>
-
-**Applied AI**
-
-<p>
-  <img src="assets/badges/llm-integration.svg" alt="LLM Integration">
-  <img src="assets/badges/model-evaluation.svg" alt="Model Evaluation">
-  <img src="assets/badges/scikit-learn.svg" alt="scikit-learn">
-  <img src="assets/badges/ollama.svg" alt="Ollama">
-</p>
-
-**Engineering & Data**
-
-<p>
-  <img src="assets/badges/python.svg" alt="Python">
-  <img src="assets/badges/typescript.svg" alt="TypeScript">
-  <img src="assets/badges/react.svg" alt="React">
-  <img src="assets/badges/fastapi.svg" alt="FastAPI">
-  <img src="assets/badges/postgresql.svg" alt="PostgreSQL">
-  <img src="assets/badges/duckdb.svg" alt="DuckDB">
-  <img src="assets/badges/spring-boot.svg" alt="Java / Spring Boot">
-</p>
-
-**Development & Delivery**
-
-<p>
-  <img src="assets/badges/git.svg" alt="Git">
-  <img src="assets/badges/pytest.svg" alt="pytest">
-  <img src="assets/badges/jira.svg" alt="Jira">
-  <img src="assets/badges/agile-scrum.svg" alt="Agile / Scrum">
-  <img src="assets/badges/requirements.svg" alt="Requirements Analysis">
+<p align="center">
+<picture>
+<source media="(prefers-color-scheme: dark) and (max-width: 560px)" srcset="assets/profile/dark/stack-board-mobile.svg">
+<source media="(max-width: 560px)" srcset="assets/profile/light/stack-board-mobile.svg">
+<source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/stack-board.svg">
+<img src="assets/profile/light/stack-board.svg" width="872" alt="Tech stack — Business Analytics &amp; Strategy: Excel, SQL, Financial Modeling, Monte Carlo, OR-Tools, Forecasting; Applied AI: LLM Integration, Model Evaluation, scikit-learn, Ollama; Engineering &amp; Data: Python, TypeScript, React, FastAPI, PostgreSQL, DuckDB, Java / Spring Boot; Development &amp; Delivery: Git, pytest, Jira, Agile / Scrum, Requirements">
+</picture>
 </p>
 
 <br>
 
 <p align="center">
-  <img src="assets/sections/projects.svg" width="100%" alt="Featured projects">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/heading-projects.svg"><img src="assets/profile/light/heading-projects.svg" height="52" alt="Featured projects"></picture>
 </p>
 
 <img src="assets/projects/project-01.svg" width="100%" alt="Project 01: Technology &amp; AI Investment Strategy">
@@ -148,7 +102,7 @@ Built with Team Exxeta1 for the Q-Hack 2026 Exxeta challenge: a macOS app that s
 <br>
 
 <p align="center">
-  <img src="assets/sections/connect.svg" width="100%" alt="Let's connect">
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/profile/dark/heading-connect.svg"><img src="assets/profile/light/heading-connect.svg" height="52" alt="Let's connect"></picture>
 </p>
 
 <p align="center">

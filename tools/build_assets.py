@@ -42,6 +42,9 @@ GOLD_LIGHT = "#f5d590"
 GOLD_DEEP = "#a8772c"
 CREAM = "#f6ead2"
 LAVENDER = "#c3b6e6"
+INK_NAVY = "#1b1840"     # light-mode text
+INK_PURPLE = "#3b2470"   # light-mode headings
+INK_GOLD = "#8a5a12"     # light-mode ornaments
 
 # ------------------------------------------------------------------ fonts
 FONT_SOURCES = {
@@ -207,25 +210,6 @@ def write(rel: str, content: str) -> None:
     p = ASSETS / rel
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(content, encoding="utf-8")
-
-
-# ------------------------------------------------------------------ section headers
-def section_header(slug: str, title: str, subtitle: str, seed: int) -> None:
-    w, h = 800, 112
-    uid = slug
-    body = [plaque_defs(uid, w, h), frame(uid, w, h, 16), stars(seed, w, h, 60,
-            avoid=lambda x, y: 180 < x < 620 and 20 < y < 95)]
-    tw = F["label"].width(title, 32, 7)
-    body.append(text("label", title, 32, w / 2, 56, GOLD_LIGHT, "middle", 7))
-    gap = tw / 2 + 26
-    for side in (-1, 1):
-        x0 = w / 2 + side * gap
-        x1 = w / 2 + side * (gap + 120)
-        body.append(f'<line x1="{x0:g}" y1="45" x2="{x1:g}" y2="45" stroke="{GOLD}" stroke-opacity="0.75" stroke-width="1.4"/>')
-        body.append(sparkle(x0 + side * 4, 45, 5))
-        body.append(f'<circle cx="{x1 + side * 6:g}" cy="45" r="2.2" fill="{GOLD}"/>')
-    body.append(text("italic", subtitle, 25, w / 2, 89, CREAM, "middle", 0.4, opacity=0.9))
-    write(f"sections/{slug}.svg", svg(w, h, "".join(body), f"{title.title()} — {subtitle}"))
 
 
 # ------------------------------------------------------------------ project motifs
@@ -444,33 +428,18 @@ def badge(slug: str, label: str, icon: str, kind: str = "brand") -> None:
     write(f"badges/{slug}.svg", svg(math.ceil(w), h, "".join(body), label))
 
 
-BADGES = [
+BADGES = [  # pills used under the project cards
     # slug, label, icon, kind
     ("python", "Python", "python", "brand"),
     ("sql", "SQL", "database", "concept"),
-    ("postgresql", "PostgreSQL", "postgresql", "brand"),
     ("duckdb", "DuckDB", "duckdb", "brand"),
     ("typescript", "TypeScript", "typescript", "brand"),
     ("react", "React", "react", "brand"),
     ("fastapi", "FastAPI", "fastapi", "brand"),
-    ("spring-boot", "Java / Spring Boot", "springboot", "brand"),
     ("streamlit", "Streamlit", "streamlit", "brand"),
     ("electron", "Electron", "electron", "brand"),
-    ("scikit-learn", "scikit-learn", "scikitlearn", "brand"),
-    ("pandas", "pandas", "pandas", "brand"),
-    ("ollama", "Ollama", "ollama", "brand"),
-    ("git", "Git", "git", "brand"),
-    ("pytest", "pytest", "pytest", "brand"),
-    ("jira", "Jira", "jira", "brand"),
     ("or-tools", "OR-Tools", "optimize", "concept"),
-    ("excel", "Excel", "excel", "concept"),
-    ("financial-modeling", "Financial Modeling", "finance", "concept"),
     ("monte-carlo", "Monte Carlo", "montecarlo", "concept"),
-    ("forecasting", "Forecasting", "forecast", "concept"),
-    ("llm-integration", "LLM Integration", "llm", "concept"),
-    ("model-evaluation", "Model Evaluation", "evaluate", "concept"),
-    ("agile-scrum", "Agile / Scrum", "agile", "concept"),
-    ("requirements", "Requirements Analysis", "requirements", "concept"),
 ]
 
 
@@ -484,11 +453,151 @@ ABOUT_ICONS = {
 
 
 def about_icon(slug: str) -> None:
-    s = 48
-    body = (f'<circle cx="24" cy="24" r="22.5" fill="{NAVY_2}" stroke="{GOLD}" stroke-width="1.5"/>'
-            f'<g transform="translate(12 12)" fill="none" stroke="{GOLD_LIGHT}" stroke-width="1.7" '
-            f'stroke-linecap="round" stroke-linejoin="round">{ABOUT_ICONS[slug]}</g>')
-    write(f"icons/{slug}.svg", svg(s, s, body, "", decorative=True))
+    """Small line glyphs that sit inline with the About Me sentences (light + dark)."""
+    for theme, col in (("dark", GOLD_LIGHT), ("light", INK_GOLD)):
+        body = (f'<g fill="none" stroke="{col}" stroke-width="1.9" stroke-linecap="round" '
+                f'stroke-linejoin="round">{ABOUT_ICONS[slug]}</g>')
+        write(f"profile/{theme}/about-{slug}.svg", svg(24, 24, body, "", decorative=True))
+
+
+# ------------------------------------------------------------------ compact headings
+def heading(slug: str, title: str) -> None:
+    """Centered small-caps title framed by an orbit line and two stars."""
+    size, track = 24, 5
+    tw = F["label"].width(title, size, track)
+    w, h = tw + 2 * 150, 52
+    for theme, ink, orn in (("dark", GOLD_LIGHT, GOLD), ("light", INK_PURPLE, INK_GOLD)):
+        b = [text("label", title, size, w / 2, 34, ink, "middle", track)]
+        for side in (-1, 1):
+            x0 = w / 2 + side * (tw / 2 + 18)
+            x1 = w / 2 + side * (tw / 2 + 128)
+            b.append(f'<path d="M{x0:.1f} 26Q{(x0 + x1) / 2:.1f} {26 + 7:.1f} {x1:.1f} 26" fill="none" '
+                     f'stroke="{orn}" stroke-width="1.3" stroke-opacity="0.85"/>')
+            b.append(sparkle(x0, 26, 5, orn))
+            b.append(f'<circle cx="{x1 + side * 6:.1f}" cy="26" r="2.4" fill="{orn}"/>')
+        b.append(sparkle(w / 2 + tw / 2 + 4, 9, 3.2, orn))
+        write(f"profile/{theme}/heading-{slug}.svg", svg(math.ceil(w), h, "".join(b), title.title()))
+
+
+# ------------------------------------------------------------------ tech stack board
+STACK = [
+    ("Business Analytics & Strategy", [
+        ("Excel", "excel", "concept"), ("SQL", "database", "concept"),
+        ("Financial Modeling", "finance", "concept"), ("Monte Carlo", "montecarlo", "concept"),
+        ("OR-Tools", "optimize", "concept"), ("Forecasting", "forecast", "concept")]),
+    ("Applied AI", [
+        ("LLM Integration", "llm", "concept"), ("Model Evaluation", "evaluate", "concept"),
+        ("scikit-learn", "scikitlearn", "brand"), ("Ollama", "ollama", "brand")]),
+    ("Engineering & Data", [
+        ("Python", "python", "brand"), ("TypeScript", "typescript", "brand"),
+        ("React", "react", "brand"), ("FastAPI", "fastapi", "brand"),
+        ("PostgreSQL", "postgresql", "brand"), ("DuckDB", "duckdb", "brand"),
+        ("Java / Spring Boot", "springboot", "brand")]),
+    ("Development & Delivery", [
+        ("Git", "git", "brand"), ("pytest", "pytest", "brand"), ("Jira", "jira", "brand"),
+        ("Agile / Scrum", "agile", "concept"), ("Requirements", "requirements", "concept")]),
+]
+
+THEMES = {
+    "dark": dict(bg0=NAVY, bg1=PURPLE, frame=GOLD, tile=NAVY_2, tile_stroke=GOLD, label=CREAM,
+                 cat=GOLD_LIGHT, concept=GOLD_LIGHT, rule=GOLD, star=CREAM),
+    "light": dict(bg0="#fbf6ea", bg1="#f1e8f7", frame=INK_GOLD, tile="#ffffff", tile_stroke=INK_GOLD,
+                  label=INK_NAVY, cat=INK_PURPLE, concept=INK_GOLD, rule=INK_GOLD, star=INK_GOLD),
+}
+
+
+def darken_for_light(color: str, bg: str = "#ffffff", target: float = 2.6) -> str:
+    c, b = hex_to_rgb(color), lum(hex_to_rgb(bg))
+    for t in [i / 20 for i in range(21)]:
+        m = tuple(v * (1 - t) for v in c)
+        if (b + 0.05) / (lum(m) + 0.05) >= target:
+            return "#" + "".join(f"{round(v * 255):02x}" for v in m)
+    return INK_NAVY
+
+
+def tile(x: float, y: float, label: str, icon: str, kind: str, theme: str, ts: float = 60,
+         fs: float = 11.5) -> str:
+    t = THEMES[theme]
+    o = [f'<rect x="{x:.1f}" y="{y:.1f}" width="{ts}" height="{ts}" rx="{ts * 0.24:.1f}" fill="{t["tile"]}" '
+         f'stroke="{t["tile_stroke"]}" stroke-opacity="0.7" stroke-width="1.2"/>']
+    isz = ts * 0.47
+    ix, iy, sc = x + (ts - isz) / 2, y + (ts - isz) / 2, isz / 24
+    if kind == "brand":
+        col = legible(BRAND[icon]) if theme == "dark" else darken_for_light(BRAND[icon])
+        o.append(f'<path transform="translate({ix:.1f} {iy:.1f}) scale({sc:.4f})" fill="{col}" d="{simple_icon(icon)}"/>')
+    else:
+        o.append(f'<g transform="translate({ix:.1f} {iy:.1f}) scale({sc:.4f})" fill="none" stroke="{t["concept"]}" '
+                 f'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{CONCEPTS[icon]}</g>')
+    lines = wrap("sans", label, fs, ts + 24)
+    for i, ln in enumerate(lines):
+        o.append(text("sans", ln, fs, x + ts / 2, y + ts + fs + 6 + i * (fs + 3), t["label"], "middle"))
+    return "".join(o)
+
+
+def board_shell(w: float, h: float, theme: str, seed: int) -> str:
+    t = THEMES[theme]
+    uid = f"sb{theme}{int(w)}"
+    o = [f'<defs><linearGradient id="{uid}" x1="0" y1="0" x2="1" y2="1">'
+         f'<stop offset="0" stop-color="{t["bg0"]}"/><stop offset="1" stop-color="{t["bg1"]}"/></linearGradient></defs>',
+         f'<rect x="1" y="1" width="{w - 2}" height="{h - 2}" rx="20" fill="url(#{uid})" stroke="{t["frame"]}" stroke-width="1.6"/>',
+         f'<rect x="7" y="7" width="{w - 14}" height="{h - 14}" rx="15" fill="none" stroke="{t["frame"]}" stroke-opacity="0.3"/>']
+    rnd = random.Random(seed)
+    for _ in range(int(w * h / 4200)):
+        o.append(f'<circle cx="{rnd.uniform(12, w - 12):.1f}" cy="{rnd.uniform(12, h - 12):.1f}" '
+                 f'r="{rnd.choice([0.6, 0.8, 1.1])}" fill="{t["star"]}" fill-opacity="{rnd.uniform(0.2, 0.6):.2f}"/>')
+    for cx, cy in [(7, 7), (w - 7, 7), (7, h - 7), (w - 7, h - 7)]:
+        o.append(sparkle(cx, cy, 5.5, t["frame"]))
+    return "".join(o)
+
+
+def stack_alt() -> str:
+    return "Tech stack — " + "; ".join(f"{c}: " + ", ".join(i[0] for i in items) for c, items in STACK)
+
+
+def stack_board() -> None:
+    alt = stack_alt()
+    # desktop: category label column on the left, tiles to the right
+    w, left, pitch, ts, row_h, top = 872, 236, 88, 60, 112, 26
+    h = top + row_h * len(STACK) + 8
+    for theme in THEMES:
+        t = THEMES[theme]
+        b = [board_shell(w, h, theme, 7)]
+        for r, (cat, items) in enumerate(STACK):
+            y = top + r * row_h
+            parts = cat.upper().split(" & ")
+            lines = [parts[0]] + [f"& {x}" for x in parts[1:]]
+            cy = y + ts / 2 - (len(lines) - 1) * 9 + 4
+            b.append(sparkle(36, cy - 4.5, 4.5, t["cat"]))
+            for i, ln in enumerate(lines):
+                b.append(text("label", ln, 13, 50, cy + i * 18, t["cat"], tracking=1.4))
+            for i, (label, icon, kind) in enumerate(items):
+                b.append(tile(left + i * pitch, y + 4, label, icon, kind, theme, ts))
+            if r < len(STACK) - 1:
+                b.append(f'<line x1="34" y1="{y + row_h - 6}" x2="{w - 34}" y2="{y + row_h - 6}" stroke="{t["rule"]}" '
+                         f'stroke-opacity="0.28" stroke-dasharray="2 5"/>')
+        write(f"profile/{theme}/stack-board.svg", svg(w, h, "".join(b), alt))
+    # mobile: category title on its own line, four tiles per row, larger type
+    w, cols, ts, pitch, fs = 400, 4, 64, 92, 13
+    x0 = (w - (cols - 1) * pitch - ts) / 2
+    layout, y = [], 30
+    for cat, items in STACK:
+        layout.append(("cat", cat, y))
+        y += 22
+        for k in range(0, len(items), cols):
+            layout.append(("row", items[k:k + cols], y))
+            y += ts + 50
+        y += 16
+    h = y + 6
+    for theme in THEMES:
+        t = THEMES[theme]
+        b = [board_shell(w, h, theme, 8)]
+        for kind, payload, yy in layout:
+            if kind == "cat":
+                b.append(text("label", payload.upper(), 14, w / 2, yy + 8, t["cat"], "middle", 1.6))
+            else:
+                for i, (label, icon, k) in enumerate(payload):
+                    b.append(tile(x0 + i * pitch, yy, label, icon, k, theme, ts, fs))
+        write(f"profile/{theme}/stack-board-mobile.svg", svg(w, h, "".join(b), alt))
 
 
 # ------------------------------------------------------------------ contact buttons
@@ -519,10 +628,10 @@ def footer() -> None:
 
 def main() -> None:
     F.update(load_faces())
-    section_header("about", "ABOUT ME", "Where engineering judgment meets business questions", 1)
-    section_header("stack", "TECH STACK", "Tools I have used in shipped work and projects", 2)
-    section_header("projects", "FEATURED PROJECTS", "Four questions, four working systems", 3)
-    section_header("connect", "LET’S CONNECT", "Open to conversations about strategy, analytics and applied AI", 4)
+    for slug, title in (("about", "ABOUT ME"), ("stack", "TECH STACK"),
+                        ("projects", "FEATURED PROJECTS"), ("connect", "LET\u2019S CONNECT")):
+        heading(slug, title)
+    stack_board()
     for p in PROJECTS:
         project_plaque(*p)
     for b in BADGES:
