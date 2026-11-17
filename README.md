@@ -44,8 +44,6 @@
 </picture>
 </p>
 
-<p align="center"><a href="https://github.com/sohamshindework/DoxShield-Exxeta1"><b>DoxShield repository →</b></a> &nbsp;·&nbsp; <sub>Projects 01–03: repositories not yet public</sub></p>
-
 <details>
 <summary><b>Project 01 · Technology &amp; AI Investment Strategy</b> — <i>Where should limited technology budgets go?</i></summary>
 
